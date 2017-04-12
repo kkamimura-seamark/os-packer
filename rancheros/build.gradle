@@ -1,0 +1,60 @@
+ext {
+	rancherVersion="v0.9.2"
+}
+
+def workDir="${buildDir}"
+def binDir="${projectDir}/scripts"
+def docker="${binDir}/docker-machine"
+def vbox="${binDir}/virtualbox"
+def vagr="${binDir}/vagrant"
+
+task clean(){
+  doLast {
+    cleanSteps("${workDir}","${docker}","${vbox}")
+  }
+}
+task build(){
+  doFirst {
+  	file("${workDir}").mkdir()
+  }
+  doLast {
+    createBoxSteps("${workDir}","${docker}","${vbox}","${vagr}")
+  }
+}
+void createBoxSteps(workDir,docker,vbox,vagr){
+  exec {
+    workingDir "${workDir}"
+    executable "${docker}/create.sh"
+    args "${rancherVersion}"
+  }
+  [
+  	"${docker}/stop.sh",
+  	"${vbox}/create_hd.sh",
+  	"${docker}/start.sh",
+  	"${docker}/regist_key.sh",
+  	"${docker}/stop.sh",
+  	"${vbox}/create.sh"  	
+  ].each{ sh->
+  	exec {
+      workingDir "${workDir}"
+      executable "${sh}"
+  	}
+  }
+  exec {
+    workingDir "${workDir}"
+    executable "${vagr}/create_box.sh"
+    args "${rancherVersion}"
+  }
+}
+void cleanSteps(workDir, docker,vbox) {
+  [
+  	"${vbox}/remove.sh",  	
+  	"${docker}/remove.sh"
+  ].each{ sh->
+  	exec {
+      workingDir "${workDir}"
+      executable "${sh}"
+  	}
+  }
+
+}
