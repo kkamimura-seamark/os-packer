@@ -2,4 +2,5 @@
 
 VM_NAME="${1:-VM2}"
 
-VBoxManage unregistervm ${VM_NAME} --delete
+sudo VBoxManage unregistervm ${VM_NAME} --delete
+echo "removed status ${VN_NAME} $?"

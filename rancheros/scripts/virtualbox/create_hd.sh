@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WORK_DIR="${1:-$(pwd)}/cache"
+WORK_DIR="${1:-$(pwd)}/working"
 VM_NAME="${2:-VM1}"
 
 FILE_NAME="work_sda.vdi"

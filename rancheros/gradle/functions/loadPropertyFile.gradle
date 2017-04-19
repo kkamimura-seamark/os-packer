@@ -1,0 +1,10 @@
+ext.loadPropertyFile = { filePath ->
+	file(filePath).withInputStream {
+		def props = new Properties()
+		props.load(it)
+		
+		props.each { k,v ->
+			project.ext[k]=v
+		}
+	}
+}

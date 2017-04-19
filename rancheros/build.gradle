@@ -1,6 +1,5 @@
-ext {
-	rancherVersion="v0.9.2"
-}
+apply from:"./gradle/functions/loadPropertyFile.gradle"
+project.loadPropertyFile("./rancheros.properties")
 
 def workDir="${buildDir}"
 def binDir="${projectDir}/scripts"
@@ -16,6 +15,8 @@ task clean(){
 task build(){
   doFirst {
   	file("${workDir}").mkdir()
+  	file("${workDir}/cache").mkdir()
+  	file("${workDir}/output").mkdir()
   }
   doLast {
     createBoxSteps("${workDir}","${docker}","${vbox}","${vagr}")
@@ -35,26 +36,31 @@ void createBoxSteps(workDir,docker,vbox,vagr){
   	"${docker}/stop.sh",
   	"${vbox}/create.sh"  	
   ].each{ sh->
+    println "execute [${sh}]"
   	exec {
       workingDir "${workDir}"
       executable "${sh}"
   	}
   }
   exec {
+    println "execute [${vagr}/create_box.sh]"
     workingDir "${workDir}"
     executable "${vagr}/create_box.sh"
     args "${rancherVersion}"
   }
 }
 void cleanSteps(workDir, docker,vbox) {
-  [
-  	"${vbox}/remove.sh",  	
-  	"${docker}/remove.sh"
-  ].each{ sh->
-  	exec {
-      workingDir "${workDir}"
-      executable "${sh}"
-  	}
+  if( file("${workDir}").exists() ){
+    [
+    	"${vbox}/remove.sh",  	
+  	  "${docker}/remove.sh"
+    ].each{ sh->
+      println "execute [${sh}]"
+  	  exec {
+        workingDir "${workDir}"
+        executable "${sh}"
+  	  }
+    }
   }
 
 }
