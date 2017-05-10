@@ -1,0 +1,17 @@
+{
+	"name": "seamark/rancheros",
+	"description": "Seamark RancherOS",
+	"versions": [
+		{
+			"version": "${BOX_VERSION}",
+			"providers": [
+				{
+					"name": "virtualbox",
+					"url": "https://github.com/kkamimura-seamark/vagrant-box/releases/download/rancher_v${BOX_VERSION}/rancheros.box",
+					"checksum_type": "md5",
+					"checksum": "${CHECKSUM}"
+				}
+			]
+		}
+	]
+}
