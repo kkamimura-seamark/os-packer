@@ -62,5 +62,22 @@ void cleanSteps(workDir, docker,vbox) {
   	  }
     }
   }
+}
 
+task buildMetaJson(type:Copy) {
+	def args = [
+		'VERSION':"${rancherVersion}",
+		'BOX_VERSION':"${boxVersion}"
+	]
+	from ('templates') {
+		include 'metadata.json.template'
+	}
+	into "${buildDir}/output"
+	expand( args )
+	rename( '.+','metadata.json' )
+	outputs.upToDateWhen { false }
+	doFirst {
+		ant.checksum(file: "${buildDir}/output/rancheros_${rancherVersion}.box", property: "cs.name")
+		args.put('CHECKSUM',"${ant.properties["cs.name"]}")
+	}
 }
